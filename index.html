@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captar el sonido: El micrófono · Ondas 1925–1939</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --dark:  #111111;
+      --card:  #1a1a1a;
+      --gold:  #c9a84c;
+      --gold2: #e8c97a;
+      --text:  #e8e8e8;
+      --muted: #9a9a9a;
+      --white: #ffffff;
+      --serif: 'Georgia', 'Times New Roman', serif;
+      --sans:  'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--gold);
+      z-index: 1000;
+      transition: width 0.15s ease;
+    }
+
+    /* ── Top nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: all;
+    }
+
+    .nav-logo  { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
+    .nav-sep   { color: var(--gold); opacity: 0.5; }
+    .nav-title { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+
+    /* ── Dot nav ── */
+    #slide-nav {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 800;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      pointer-events: all;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active { background: var(--gold); transform: scale(1.5); }
+    .dot:hover  { background: rgba(255,255,255,0.6); }
+
+    /* ── Sections ── */
+    section {
+      scroll-snap-align: start;
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── HERO ── */
+    #hero { overflow: hidden; background: var(--black); }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('images/CABECERA.webp');
+      background-size: cover;
+      background-position: center 25%;
+      filter: brightness(0.35) saturate(0.65);
+      transform: scale(1.04);
+      transition: transform 8s ease;
+    }
+
+    #hero:hover .hero-bg { transform: scale(1); }
+
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(0,0,0,0.1) 0%,
+        rgba(0,0,0,0.0) 40%,
+        rgba(10,10,10,0.9) 85%,
+        var(--black) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+      padding: 80px 48px 60px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title em { font-style: italic; color: var(--gold2); }
+
+    .hero-subtitle {
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(232,232,232,0.75);
+      max-width: 520px;
+      margin: 0 auto 48px;
+      font-family: var(--serif);
+      font-style: italic;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      animation: fadeInUp 2s ease 1.5s both;
+    }
+
+    .scroll-arrow {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, var(--gold));
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(0.3); opacity: 0.4; transform-origin: top; }
+      50%       { transform: scaleY(1);   opacity: 1;   transform-origin: top; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ── Intro (000) ── */
+    #intro {
+      background: var(--dark);
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+
+    .intro-inner {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    .intro-image-col { position: relative; overflow: hidden; }
+    .intro-image-col img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      filter: brightness(0.6) saturate(0.75);
+    }
+
+    .intro-image-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, transparent 60%, var(--dark) 100%);
+    }
+
+    .intro-text-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px 80px 48px;
+    }
+
+    .section-number { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; opacity: 0.8; }
+    .section-label  { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 32px; border-left: 2px solid var(--gold); padding-left: 16px; }
+
+    .section-heading {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 28px;
+    }
+
+    .section-body {
+      font-family: var(--serif);
+      font-size: 15.5px;
+      line-height: 1.85;
+      color: rgba(232,232,232,0.78);
+      max-width: 520px;
+    }
+
+    .section-body p + p { margin-top: 18px; }
+
+    /* ── Slides ── */
+    .slide { background: var(--black); overflow: hidden; flex-direction: column; }
+
+    .slide-inner {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: grid;
+    }
+
+    .slide-inner.layout-a { grid-template-columns: 58% 42%; }
+    .slide-inner.layout-b { grid-template-columns: 42% 58%; }
+
+    .slide-image { position: relative; overflow: hidden; }
+    .slide-image img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      transition: transform 10s ease;
+    }
+
+    .slide:hover .slide-image img { transform: scale(1.04); }
+
+    .slide-image-vignette {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.0) 50%);
+    }
+
+    .layout-b .slide-image-vignette {
+      background: linear-gradient(-135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.0) 50%);
+    }
+
+    .slide-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 72px 56px;
+      background: var(--card);
+      position: relative;
+    }
+
+    .layout-b .slide-text { order: -1; background: var(--dark); }
+
+    .slide-date  { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .slide-num   { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+
+    .slide-title {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2.2vw, 2.2rem);
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .slide-body {
+      font-family: var(--serif);
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: rgba(232,232,232,0.72);
+      max-width: 440px;
+    }
+
+    .slide-body p + p { margin-top: 14px; }
+
+    .slide-caption {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .slide-caption-text { font-size: 10px; color: var(--muted); line-height: 1.5; font-style: italic; }
+
+    /* ── Coda ── */
+    #coda { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.05); }
+
+    .coda-inner {
+      text-align: center;
+      padding: 80px 48px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .coda-icon  { font-size: 32px; margin-bottom: 32px; opacity: 0.6; }
+
+    .coda-title {
+      font-family: var(--serif);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 24px;
+      line-height: 1.2;
+    }
+
+    .coda-body {
+      font-family: var(--serif);
+      font-size: 15px;
+      line-height: 1.8;
+      color: rgba(232,232,232,0.7);
+      margin-bottom: 40px;
+    }
+
+    .coda-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+    }
+
+    .coda-link:hover { background: var(--gold); color: var(--black); }
+    .coda-link svg   { width: 14px; height: 14px; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-left { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); line-height: 1.8; }
+    .footer-left strong { display: block; color: var(--gold); margin-bottom: 4px; letter-spacing: 0.3em; }
+    .footer-right { font-size: 10px; color: var(--muted); text-align: right; line-height: 1.8; }
+
+    /* ── Reveal ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.35s; }
+
+    /* ── Gold line ── */
+    .gold-line { display: block; width: 40px; height: 1px; background: var(--gold); margin: 20px 0; opacity: 0.6; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .intro-inner, .slide-inner.layout-a, .slide-inner.layout-b { grid-template-columns: 1fr; }
+      .intro-image-col { min-height: 40vh; }
+      .slide-image     { min-height: 45vh; }
+      .layout-b .slide-text { order: unset; }
+      .slide-text, .intro-text-col { padding: 48px 28px; }
+      nav { padding: 14px 20px; }
+      #slide-nav { display: none; }
+      .hero-content { padding: 80px 24px 60px; }
+      footer { flex-direction: column; }
+      .footer-right { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-logo">Ondas · 1925–1939</span>
+    <span class="nav-sep">—</span>
+    <span class="nav-title">Itinerario 2</span>
+  </div>
+</nav>
+
+<div id="slide-nav">
+  <div class="dot active" data-target="hero"      title="Inicio"></div>
+  <div class="dot"        data-target="intro"     title="El micrófono"></div>
+  <div class="dot"        data-target="slide-001" title="Hipólito Lázaro, 1930"></div>
+  <div class="dot"        data-target="slide-002" title="Paquita Alcaraz, 1933"></div>
+  <div class="dot"        data-target="slide-003" title="Concierto desde un avión, 1926"></div>
+  <div class="dot"        data-target="slide-004" title="NBC Nueva York, 1929"></div>
+  <div class="dot"        data-target="slide-005" title="Flamenco al micrófono, 1934"></div>
+  <div class="dot"        data-target="slide-006" title="Retransmitiendo, 1927"></div>
+  <div class="dot"        data-target="slide-007" title="Artistas japonesas, 1929"></div>
+  <div class="dot"        data-target="slide-008" title="Niños al micrófono, 1933"></div>
+  <div class="dot"        data-target="slide-009" title="El do de pecho, 1933"></div>
+  <div class="dot"        data-target="slide-010" title="Entre micrófonos, 1933"></div>
+  <div class="dot"        data-target="slide-011" title="Una foca, 1927"></div>
+  <div class="dot"        data-target="coda"      title="Explorar más"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-gradient"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow reveal">Itinerario 2 · Exposición Ondas</p>
+    <h1 class="hero-title reveal reveal-delay-1">
+      Captar<br>el <em>sonido</em>
+    </h1>
+    <p class="hero-subtitle reveal reveal-delay-2">
+      El micrófono se convierte en el gran protagonista del retrato radiofónico,
+      actuando como mediador visible entre la voz, la música y el oyente.
+    </p>
+    <div class="hero-meta reveal reveal-delay-3">
+      <span>1926 — 1934</span>
+      <span>·</span>
+      <span>Revista Ondas</span>
+      <span>·</span>
+      <span>11 imágenes</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-arrow"></div>
+    <span>Desplaza</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     000 — INTRO
+══════════════════════════════════════════ -->
+<section id="intro">
+  <div class="intro-inner">
+    <div class="intro-image-col">
+      <img src="images/001.webp" alt="Hipólito Lázaro ante el micrófono de Unión Radio">
+      <div class="intro-image-overlay"></div>
+    </div>
+    <div class="intro-text-col">
+      <p class="section-number reveal">000</p>
+      <p class="section-label reveal reveal-delay-1">El micrófono</p>
+      <h2 class="section-heading reveal reveal-delay-2">
+        Un nuevo<br>mediador visible
+      </h2>
+      <span class="gold-line reveal reveal-delay-2"></span>
+      <div class="section-body reveal reveal-delay-3">
+        <p>
+          La presencia del micrófono es especialmente destacada. Lo encontramos
+          en numerosas ocasiones y con muchos intérpretes distintos, pero es muy
+          abundante con cantantes, subrayando el papel central de la canción, en
+          todas sus variantes, en la escucha radiofónica de estos años.
+        </p>
+        <p>
+          Más que un simple dispositivo técnico, el micrófono actúa como verdadero
+          mediador visible entre la voz, la música y el nuevo oyente radiofónico.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     001 — Hipólito Lázaro (1930)
+══════════════════════════════════════════ -->
+<section id="slide-001" class="slide">
+  <div class="slide-inner layout-a">
+    <div class="slide-image">
+      <img src="images/001.webp" alt="Hipólito Lázaro ante el micrófono de Unión Radio, 1930">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">001</p>
+      <p class="slide-date reveal">1 de noviembre de 1930</p>
+      <h2 class="slide-title reveal reveal-delay-1">El micrófono de Unión Radio</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          Inauguramos esta sección con el gran tenor Hipólito Lázaro cantando ante
+          el micrófono de Unión Radio. Aunque el pie de foto destaca al intérprete,
+          es el micrófono el que ocupa el centro de la escena.
+        </p>
+        <p>
+          A lo largo de los años, este objeto irá ganando protagonismo en la iconografía
+          de la revista <em>Ondas</em>: cada vez más centrado, cada vez más visible,
+          hasta convertirse en el verdadero símbolo de la radiodifusión y, con ella,
+          de una nueva forma de escuchar música.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Hipólito Lázaro, tenor · <em>Ondas</em>, 1 nov. 1930</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     002 — Paquita Alcaraz en portada (1933)
+══════════════════════════════════════════ -->
+<section id="slide-002" class="slide">
+  <div class="slide-inner layout-b">
+    <div class="slide-image">
+      <img src="images/002.webp" alt="Paquita Alcaraz en portada de Ondas, 1933">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">002</p>
+      <p class="slide-date reveal">25 de marzo de 1933</p>
+      <h2 class="slide-title reveal reveal-delay-1">El micrófono en portada</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          La cantante Paquita Alcaraz posa en la portada de <em>Ondas</em> junto al
+          micrófono de Unión Radio, claramente identificado con el logotipo de la emisora.
+          El micrófono asciende así al lugar más destacado de la revista: la primera página.
+        </p>
+        <p>
+          No es un mero instrumento técnico, sino un icono visual que comparte protagonismo
+          con la artista. Esta presencia en portada no es casual: se convertirá en un recurso
+          habitual, confirmando que la retransmisión musical era la seña de identidad de
+          la publicación.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Paquita Alcaraz · Portada de <em>Ondas</em>, 25 mar. 1933</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     003 — Radioconcierto desde un avión (1926)
+══════════════════════════════════════════ -->
+<section id="slide-003" class="slide">
+  <div class="slide-inner layout-a">
+    <div class="slide-image">
+      <img src="images/003.webp" alt="Jeannette Vreeland, soprano, tras radioconcierto desde un avión, 1926">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">003</p>
+      <p class="slide-date reveal">4 de julio de 1926</p>
+      <h2 class="slide-title reveal reveal-delay-1">Un radioconcierto desde un avión</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          Los pequeños micrófonos portátiles permitían llevar la retransmisión musical
+          a los lugares más insospechados. Un caso novedoso fue el de la soprano
+          neoyorquina Jeannette Vreeland, fotografiada aquí con casco y equipo de
+          aviación, tras ofrecer un radioconcierto desde un avión.
+        </p>
+        <p>
+          La promesa de la radio era precisamente que el oyente pudiera escuchar desde
+          su casa músicas interpretadas en cualquier lugar del mundo. Experimentos como
+          este llevaban esa promesa hasta el extremo.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Jeannette Vreeland, soprano · <em>Ondas</em>, 4 jul. 1926</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     004 — Lillian Taiz, NBC (1929)
+══════════════════════════════════════════ -->
+<section id="slide-004" class="slide">
+  <div class="slide-inner layout-b">
+    <div class="slide-image">
+      <img src="images/004.webp" alt="Lillian Taiz ante los micrófonos dobles de la NBC, Nueva York, 1929">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">004</p>
+      <p class="slide-date reveal">3 de agosto de 1929</p>
+      <h2 class="slide-title reveal reveal-delay-1">Los micrófonos dobles de la NBC</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          Lillian Taiz, cantante de la NBC en Nueva York, posa junto a los micrófonos
+          dobles de la cadena norteamericana, con sus logotipos bien visibles. Cada
+          emisora utilizaba el micrófono como soporte de su identidad corporativa.
+        </p>
+        <p>
+          En los pequeños estudios radiofónicos no solía haber público, de modo que el
+          micrófono ocupaba el centro de la iconografía musical. Era, al mismo tiempo,
+          el instrumento de la transmisión y el emblema de la emisora.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Lillian Taiz, NBC Nueva York · <em>Ondas</em>, 3 ago. 1929</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     005 — Flamenco al micrófono (1934)
+══════════════════════════════════════════ -->
+<section id="slide-005" class="slide">
+  <div class="slide-inner layout-a">
+    <div class="slide-image">
+      <img src="images/005.webp" alt="El Niño de Valdepeñas y Manolo Martín en Unión Radio, 1934">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">005</p>
+      <p class="slide-date reveal">14 de julio de 1934</p>
+      <h2 class="slide-title reveal reveal-delay-1">Flamenco al micrófono</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          El Niño de Valdepeñas, cantaor flamenco, y el guitarrista Manolo Martín actúan
+          en el estudio de Unión Radio. La imagen muestra cómo el micrófono acogía todos
+          los géneros musicales, incluido el flamenco, una práctica hasta entonces ligada
+          a espacios concretos: cafés cantantes, tabernas, fiestas.
+        </p>
+        <p>
+          La radio funcionaba así como un gran igualador de prácticas musicales muy
+          diversas, nacidas en contextos sociales distintos, democratizando el acceso
+          a la cultura.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">El Niño de Valdepeñas y Manolo Martín · <em>Ondas</em>, 14 jul. 1934</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     006 — Los secretos del micrófono (1927)
+══════════════════════════════════════════ -->
+<section id="slide-006" class="slide">
+  <div class="slide-inner layout-b">
+    <div class="slide-image">
+      <img src="images/006.webp" alt="Director ante su orquesta con micrófono, ilustración, 1927">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">006</p>
+      <p class="slide-date reveal">21 de agosto de 1927</p>
+      <h2 class="slide-title reveal reveal-delay-1">Los secretos del micrófono</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          Pronto aparecieron también en <em>Ondas</em> artículos de carácter técnico que
+          reflexionaban sobre las posibilidades y los límites de esta nueva tecnología.
+          Esta ilustración acompaña a uno de ellos: un director ante su orquesta, con el
+          micrófono situado en el centro.
+        </p>
+        <p>
+          El artículo se pregunta por qué un mismo arreglo de una misma orquesta resulta
+          excelente una noche y produce «discordancias» la siguiente. La pregunta revela
+          una inquietud temprana: el micrófono no era un transmisor neutral, sino un
+          mediador que transformaba la experiencia musical.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Ilustración artículo técnico · <em>Ondas</em>, 21 ago. 1927</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     007 — Artistas japonesas (1929)
+══════════════════════════════════════════ -->
+<section id="slide-007" class="slide">
+  <div class="slide-inner layout-a">
+    <div class="slide-image">
+      <img src="images/007.webp" alt="Artistas japonesas ante el micrófono de la emisora JOAK, 1929">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">007</p>
+      <p class="slide-date reveal">21 de diciembre de 1929</p>
+      <h2 class="slide-title reveal reveal-delay-1">La globalización del micrófono</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          Si el micrófono acogía géneros diversos, también mostraba músicas de distintas
+          latitudes. En esta imagen, un grupo de artistas japonesas interpreta canciones
+          populares ante el micrófono de la emisora JOAK, tocando instrumentos
+          tradicionales como el shamisen.
+        </p>
+        <p>
+          Para los lectores españoles de <em>Ondas</em>, imágenes como esta constituían
+          una ventana a tradiciones musicales lejanas. La radio, apenas nacida, ya insinuaba
+          su capacidad para conectar sonidos de todo el mundo.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Artistas japonesas, emisora JOAK · <em>Ondas</em>, 21 dic. 1929</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     008 — Niños al micrófono (1933)
+══════════════════════════════════════════ -->
+<section id="slide-008" class="slide">
+  <div class="slide-inner layout-b">
+    <div class="slide-image">
+      <img src="images/008.webp" alt="Niños tocando piano y armónica ante el micrófono, 1933">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">008</p>
+      <p class="slide-date reveal">9 de septiembre de 1933</p>
+      <h2 class="slide-title reveal reveal-delay-1">Niños al micrófono</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          El micrófono, democratizador, también daba voz a la infancia. En esta fotografía,
+          una niña toca el piano mientras un niño interpreta la armónica, ambos ante el gran
+          micrófono del estudio que asoma por el borde derecho de la imagen.
+        </p>
+        <p>
+          La mirada del pequeño hacia arriba subraya la diferencia de escala entre los niños
+          y el aparato, y revela, casi sin querer, la solemnidad que implicaba actuar ante
+          la emisora.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Niños ante el micrófono · <em>Ondas</em>, 9 sep. 1933</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     009 — El do de pecho (1933)
+══════════════════════════════════════════ -->
+<section id="slide-009" class="slide">
+  <div class="slide-inner layout-a">
+    <div class="slide-image">
+      <img src="images/009.webp" alt="El do de pecho, viñeta de Climent, 1933">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">009</p>
+      <p class="slide-date reveal">24 de junio de 1933</p>
+      <h2 class="slide-title reveal reveal-delay-1">Pero la tecnología también cobraba vida</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          En <em>«El do de pecho»</em>, viñeta firmada por Climent, el micrófono adquiere
+          vida propia. En cuatro viñetas, asistimos a un duelo entre un cantante que intenta
+          alcanzar el agudo más temido de la ópera y un micrófono cada vez más irritado,
+          que termina golpeándole con su propia nota musical.
+        </p>
+        <p>
+          Tanto el micrófono como el altavoz eran tan centrales en la nueva escucha
+          radiofónica que los humoristas gráficos los convirtieron en personajes con
+          emociones propias, capaces de juzgar (y castigar) a los intérpretes.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">«El do de pecho», viñeta de Climent · <em>Ondas</em>, 24 jun. 1933</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     010 — Entre micrófonos (1933)
+══════════════════════════════════════════ -->
+<section id="slide-010" class="slide">
+  <div class="slide-inner layout-b">
+    <div class="slide-image">
+      <img src="images/010.webp" alt="Entre micrófonos, tira cómica, 1933">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">010</p>
+      <p class="slide-date reveal">19 de agosto de 1933</p>
+      <h2 class="slide-title reveal reveal-delay-1">Entre micrófonos</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          Esta delicada tira cómica en doce viñetas presenta a un micrófono veterano del
+          estudio que instruye a un recién llegado sobre todo lo que tendrá que soportar:
+          la señorita tiple, el flamenco y sus jipíos, el orador fogoso, el personaje
+          célebre, el poeta recitador, la música de jazz, la receta culinaria…
+        </p>
+        <p>
+          El micrófono veterano advierte al novato: lo peor serán «las dulces palabras»
+          que oirá cuando lo lleven a los toros o al fútbol. La viñeta ofrece, con humor,
+          un catálogo completo de la programación radiofónica de la época, vista desde
+          la perspectiva sufrida del propio micrófono.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">«Entre micrófonos», tira cómica · <em>Ondas</em>, 19 ago. 1933</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     011 — Una foca ante el micrófono (1927)
+══════════════════════════════════════════ -->
+<section id="slide-011" class="slide">
+  <div class="slide-inner layout-a">
+    <div class="slide-image">
+      <img src="images/011.webp" alt="Una foca ante el micrófono en Berlín, 1927">
+      <div class="slide-image-vignette"></div>
+    </div>
+    <div class="slide-text">
+      <p class="slide-num reveal">011</p>
+      <p class="slide-date reveal">15 de mayo de 1927</p>
+      <h2 class="slide-title reveal reveal-delay-1">Una foca ante el micrófono</h2>
+      <span class="gold-line reveal reveal-delay-1"></span>
+      <div class="slide-body reveal reveal-delay-2">
+        <p>
+          En Berlín, como nos informa <em>Ondas</em>, no solo los grandes cantantes actuaban
+          ante el micrófono sino que también los animales tenían su espacio en la programación.
+        </p>
+        <p>
+          Al fin y al cabo, si la radio podía retransmitir conciertos desde aviones, flamenco
+          desde un estudio madrileño y canciones populares japonesas, ¿por qué no el canto
+          de una foca? Es la lógica imparable de un medio que, en sus primeros años, quiso
+          llevar todos los sonidos del mundo hasta el salón de casa, sin importar su procedencia.
+        </p>
+      </div>
+      <div class="slide-caption reveal reveal-delay-3">
+        <div class="slide-caption-text">Foca ante el micrófono, Berlín · <em>Ondas</em>, 15 may. 1927</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CODA
+══════════════════════════════════════════ -->
+<section id="coda">
+  <div class="coda-inner">
+    <div class="coda-icon reveal">◈</div>
+    <h2 class="coda-title reveal reveal-delay-1">
+      Explorar más imágenes<br>con «micrófono»
+    </h2>
+    <p class="coda-body reveal reveal-delay-2">
+      Os animamos a explorar otras imágenes con la palabra clave <strong>«micrófono»</strong>
+      en nuestro buscador. Se trata de una de las categorías más extensas del repositorio:
+      los micrófonos, con sus logos, fueron (y siguen siendo) auténticas señas de identidad
+      de las distintas emisoras de radio.
+    </p>
+    <a href="https://leximususal.github.io/MUSLYME/exposicion_ondas_index.html"
+       class="coda-link reveal reveal-delay-3" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 2.5l5 5.5-5 5.5M3 8h10"/>
+      </svg>
+      Explorar el repositorio
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    <strong>LexiMus · Universidad de Salamanca</strong>
+    Léxico y ontología de la música en español<br>
+    PID2022-139589NB-C33
+  </div>
+  <div class="footer-right">
+    Fuente: Revista <em>Ondas</em>, Hemeroteca Nacional de España<br>
+    Itinerario 2 de 5 · Captar el sonido: El micrófono
+  </div>
+</footer>
+
+<script>
+  const progressBar = document.getElementById('progress-bar');
+
+  function updateProgress() {
+    const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    progressBar.style.width = pct + '%';
+  }
+
+  const dots = document.querySelectorAll('.dot');
+  const sections = ['hero','intro','slide-001','slide-002','slide-003','slide-004',
+                    'slide-005','slide-006','slide-007','slide-008','slide-009',
+                    'slide-010','slide-011','coda'];
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const el = document.getElementById(dot.dataset.target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  function updateActiveDot() {
+    const mid = window.scrollY + window.innerHeight * 0.4;
+    let active = 0;
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= mid) active = i;
+    });
+    dots.forEach((d, i) => d.classList.toggle('active', i === active));
+  }
+
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    }),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  window.addEventListener('scroll', () => { updateProgress(); updateActiveDot(); }, { passive: true });
+
+  updateProgress();
+  updateActiveDot();
+
+  document.querySelectorAll('#hero .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 180);
+  });
+</script>
+</body>
+</html>
