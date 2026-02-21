@@ -423,6 +423,68 @@
       footer { flex-direction: column; }
       .footer-right { text-align: left; }
     }
+  
+    /* -- Lightbox zoom -- */
+    .slide-image, .intro-image-col { cursor: zoom-in; }
+    #it-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.93);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 56px 24px 28px;
+    }
+    #it-lightbox.lb-open { display: flex; }
+    #it-lightbox-img {
+      max-width: 88vw;
+      max-height: 74vh;
+      object-fit: contain;
+      border: 1px solid rgba(201,168,76,0.25);
+      display: block;
+    }
+    #it-lightbox-footer {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+    #it-lightbox-caption {
+      font-family: var(--serif);
+      font-size: 13px;
+      color: rgba(232,232,232,0.72);
+      font-style: italic;
+      max-width: 640px;
+      line-height: 1.6;
+    }
+    #it-lightbox-bne {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      transition: all 0.22s ease;
+    }
+    #it-lightbox-bne:hover { background: var(--gold); color: var(--black); }
+    #it-lightbox-close {
+      position: absolute;
+      top: 18px; right: 22px;
+      background: none; border: none;
+      color: var(--muted);
+      font-size: 22px; cursor: pointer;
+      padding: 4px 8px;
+      transition: color 0.2s; line-height: 1;
+    }
+    #it-lightbox-close:hover { color: var(--white); }
   </style>
 </head>
 <body>
@@ -490,7 +552,7 @@
 ══════════════════════════════════════════ -->
 <section id="intro">
   <div class="intro-inner">
-    <div class="intro-image-col">
+    <div class="intro-image-col" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=54ead65f-3623-453a-8e46-97360b9cdde8&page=1" data-title="Un nuevo mediador visible">
       <img src="images/000.webp" alt="Micrófono de Ondas">
       <div class="intro-image-overlay"></div>
     </div>
@@ -522,7 +584,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-001" class="slide">
   <div class="slide-inner layout-a">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=54ead65f-3623-453a-8e46-97360b9cdde8&page=1" data-title="El micrófono de Unión Radio">
       <img src="images/001.webp" alt="Hipólito Lázaro ante el micrófono de Unión Radio, 1930">
       <div class="slide-image-vignette"></div>
     </div>
@@ -556,7 +618,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-002" class="slide">
   <div class="slide-inner layout-b">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=fd662ca3-3c39-435c-b7a0-a86764917bc3&page=1" data-title="El micrófono en portada">
       <img src="images/002.webp" alt="Paquita Alcaraz en portada de Ondas, 1933">
       <div class="slide-image-vignette"></div>
     </div>
@@ -590,7 +652,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-003" class="slide">
   <div class="slide-inner layout-a">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=543f2b1b-571b-4c28-8ee1-fa08d5c18ffb&page=1" data-title="Un radioconcierto desde un avión">
       <img src="images/003.webp" alt="Jeannette Vreeland, soprano, tras radioconcierto desde un avión, 1926">
       <div class="slide-image-vignette"></div>
     </div>
@@ -624,7 +686,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-004" class="slide">
   <div class="slide-inner layout-b">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=61b59446-ed6b-443b-a9d3-6b81c141acc5&page=1" data-title="Los micrófonos dobles de la NBC">
       <img src="images/004.webp" alt="Lillian Taiz ante los micrófonos dobles de la NBC, Nueva York, 1929">
       <div class="slide-image-vignette"></div>
     </div>
@@ -657,7 +719,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-005" class="slide">
   <div class="slide-inner layout-a">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=e2f86903-cf74-4d84-b289-9951b79ba1db&page=1" data-title="Flamenco al micrófono">
       <img src="images/005.webp" alt="El Niño de Valdepeñas y Manolo Martín en Unión Radio, 1934">
       <div class="slide-image-vignette"></div>
     </div>
@@ -691,7 +753,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-006" class="slide">
   <div class="slide-inner layout-b">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=a5d71374-2c00-429c-b609-420ba4f70649&page=1" data-title="Los secretos del micrófono">
       <img src="images/006.webp" alt="Director ante su orquesta con micrófono, ilustración, 1927">
       <div class="slide-image-vignette"></div>
     </div>
@@ -726,7 +788,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-007" class="slide">
   <div class="slide-inner layout-a">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=fe989162-d3ca-4741-a8a5-5e4287acc1ae&page=1" data-title="La globalización del micrófono">
       <img src="images/007.webp" alt="Artistas japonesas ante el micrófono de la emisora JOAK, 1929">
       <div class="slide-image-vignette"></div>
     </div>
@@ -760,7 +822,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-008" class="slide">
   <div class="slide-inner layout-b">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=7dab9667-97d3-4e1f-8644-9120eadea5bd&page=1" data-title="Niños al micrófono">
       <img src="images/008.webp" alt="Niños tocando piano y armónica ante el micrófono, 1933">
       <div class="slide-image-vignette"></div>
     </div>
@@ -793,7 +855,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-009" class="slide">
   <div class="slide-inner layout-a">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=658ada62-ad34-4d37-af66-bc7567e279a3&page=1" data-title="Pero la tecnología también cobraba vida">
       <img src="images/009.webp" alt="El do de pecho, viñeta de Climent, 1933">
       <div class="slide-image-vignette"></div>
     </div>
@@ -827,7 +889,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-010" class="slide">
   <div class="slide-inner layout-b">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=35921fb3-e96d-47a4-b1e5-be775147c8f8&page=1" data-title="Entre micrófonos">
       <img src="images/010.webp" alt="Entre micrófonos, tira cómica, 1933">
       <div class="slide-image-vignette"></div>
     </div>
@@ -862,7 +924,7 @@
 ══════════════════════════════════════════ -->
 <section id="slide-011" class="slide">
   <div class="slide-inner layout-a">
-    <div class="slide-image">
+    <div class="slide-image" data-bne="https://hemerotecadigital.bne.es/hd/es/viewer?id=29945448-efc7-4244-a4b4-ecef12943e85&page=1" data-title="Una foca ante el micrófono">
       <img src="images/011.webp" alt="Una foca ante el micrófono en Berlín, 1927">
       <div class="slide-image-vignette"></div>
     </div>
@@ -973,6 +1035,46 @@
   document.querySelectorAll('#hero .reveal').forEach((el, i) => {
     setTimeout(() => el.classList.add('visible'), i * 180);
   });
+
+  /* Lightbox zoom */
+  (function() {
+    var lb      = document.getElementById('it-lightbox');
+    var lbImg   = document.getElementById('it-lightbox-img');
+    var lbCap   = document.getElementById('it-lightbox-caption');
+    var lbBne   = document.getElementById('it-lightbox-bne');
+    var lbClose = document.getElementById('it-lightbox-close');
+    function closeLb() {
+      lb.classList.remove('lb-open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
+    }
+    document.querySelectorAll('.slide-image[data-bne], .intro-image-col[data-bne]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var img = el.querySelector('img');
+        lbImg.src = img ? img.src : '';
+        lbImg.alt = img ? img.alt : '';
+        lbCap.textContent = el.dataset.title || (img ? img.alt : '');
+        lbBne.href = el.dataset.bne;
+        lb.classList.add('lb-open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    lbClose.addEventListener('click', closeLb);
+    lb.addEventListener('click', function(e) { if (e.target === lb) closeLb(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLb(); });
+  })();
 </script>
+
+<!-- Lightbox -->
+<div id="it-lightbox" role="dialog" aria-modal="true">
+  <button id="it-lightbox-close" aria-label="Cerrar">&#x2715;</button>
+  <img id="it-lightbox-img" src="" alt="">
+  <div id="it-lightbox-footer">
+    <p id="it-lightbox-caption"></p>
+    <a id="it-lightbox-bne" href="#" target="_blank" rel="noopener">
+      Ver n&#xFA;mero en Hemeroteca Digital BNE
+    </a>
+  </div>
+</div>
 </body>
 </html>
