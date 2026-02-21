@@ -990,6 +990,19 @@
   </div>
 </footer>
 
+
+<!-- Lightbox -->
+<div id="it-lightbox" role="dialog" aria-modal="true">
+  <button id="it-lightbox-close" aria-label="Cerrar">&#x2715;</button>
+  <img id="it-lightbox-img" src="" alt="">
+  <div id="it-lightbox-footer">
+    <p id="it-lightbox-caption"></p>
+    <a id="it-lightbox-bne" href="#" target="_blank" rel="noopener">
+      Ver n&#xFA;mero en Hemeroteca Digital BNE
+    </a>
+  </div>
+</div>
+
 <script>
   const progressBar = document.getElementById('progress-bar');
 
@@ -1065,17 +1078,5 @@
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLb(); });
   })();
 </script>
-
-<!-- Lightbox -->
-<div id="it-lightbox" role="dialog" aria-modal="true">
-  <button id="it-lightbox-close" aria-label="Cerrar">&#x2715;</button>
-  <img id="it-lightbox-img" src="" alt="">
-  <div id="it-lightbox-footer">
-    <p id="it-lightbox-caption"></p>
-    <a id="it-lightbox-bne" href="#" target="_blank" rel="noopener">
-      Ver n&#xFA;mero en Hemeroteca Digital BNE
-    </a>
-  </div>
-</div>
 </body>
 </html>
