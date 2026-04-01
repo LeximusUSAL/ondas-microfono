@@ -3,90 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Captar el sonido: El micrófono · Ondas 1925–1939</title>
+  <title>Captar el sonido: El micrófono · Ondas 1925–1935</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Kumbh+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black: #0a0a0a;
-      --dark:  #111111;
-      --card:  #1a1a1a;
-      --gold:  #c9a84c;
-      --gold2: #e8c97a;
-      --text:  #e8e8e8;
-      --muted: #9a9a9a;
+      --black: #e8dbc8;
+      --dark:  #ddd0b8;
+      --card:  #f5ede0;
+      --gold:  #91410E;
+      --gold2: #C85632;
+      --text:  #191919;
+      --muted: #848484;
       --white: #ffffff;
-      --serif: 'Georgia', 'Times New Roman', serif;
-      --sans:  'Helvetica Neue', Arial, sans-serif;
+      --serif: 'Jost', sans-serif;
+      --sans:  'Kumbh Sans', sans-serif;
     }
 
     html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
-
-    body {
-      background: var(--black);
-      color: var(--text);
-      font-family: var(--sans);
-      overflow-x: hidden;
-    }
+    body { background: var(--black); color: var(--text); font-family: var(--sans); overflow-x: hidden; }
+    /* Hero y lightbox son siempre oscuros */
+    #hero { background: #1a0f06 !important; }
 
     /* ── Progress bar ── */
     #progress-bar {
-      position: fixed;
-      top: 0; left: 0;
-      height: 2px;
-      width: 0%;
-      background: var(--gold);
-      z-index: 1000;
-      transition: width 0.15s ease;
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: var(--gold); z-index: 1000; transition: width 0.15s ease;
     }
 
     /* ── Top nav ── */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 900;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 18px 32px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%);
+      background: rgba(10,8,5,0.72);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(232,219,200,0.08);
       pointer-events: none;
     }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      pointer-events: all;
-    }
-
-    .nav-logo  { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
-    .nav-sep   { color: var(--gold); opacity: 0.5; }
-    .nav-title { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; pointer-events: all; }
+    .nav-logo  { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(232,219,200,0.65); }
+    .nav-sep   { color: rgba(232,219,200,0.4); }
+    .nav-title { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(232,219,200,0.9); }
 
     /* ── Dot nav ── */
     #slide-nav {
-      position: fixed;
-      right: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 800;
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-      pointer-events: all;
+      position: fixed; right: 24px; top: 50%; transform: translateY(-50%);
+      z-index: 800; display: flex; flex-direction: column; gap: 8px; pointer-events: all;
     }
-
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.25);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(25,25,25,0.2); cursor: pointer; transition: all 0.3s ease; }
     .dot.active { background: var(--gold); transform: scale(1.5); }
-    .dot:hover  { background: rgba(255,255,255,0.6); }
+    .dot:hover  { background: rgba(25,25,25,0.45); }
 
     /* ── Sections ── */
     section {
@@ -138,7 +108,7 @@
       font-size: 10px;
       letter-spacing: 0.4em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: rgba(232,219,200,0.85);
       margin-bottom: 28px;
     }
 
@@ -251,7 +221,7 @@
       font-size: clamp(1.8rem, 3vw, 2.8rem);
       font-weight: 400;
       line-height: 1.2;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 28px;
     }
 
@@ -259,7 +229,7 @@
       font-family: var(--serif);
       font-size: 15.5px;
       line-height: 1.85;
-      color: rgba(232,232,232,0.78);
+      color: rgba(25,25,25,0.72);
       max-width: 520px;
     }
 
@@ -316,7 +286,7 @@
       font-size: clamp(1.4rem, 2.2vw, 2.2rem);
       font-weight: 400;
       line-height: 1.25;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 24px;
     }
 
@@ -324,7 +294,7 @@
       font-family: var(--serif);
       font-size: 14.5px;
       line-height: 1.85;
-      color: rgba(232,232,232,0.72);
+      color: rgba(25,25,25,0.70);
       max-width: 440px;
     }
 
@@ -333,71 +303,25 @@
     .slide-caption {
       margin-top: 32px;
       padding-top: 20px;
-      border-top: 1px solid rgba(255,255,255,0.07);
+      border-top: 1px solid rgba(25,25,25,0.10);
     }
 
     .slide-caption-text { font-size: 10px; color: var(--muted); line-height: 1.5; font-style: italic; }
 
     /* ── Coda ── */
-    #coda { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.05); }
-
-    .coda-inner {
-      text-align: center;
-      padding: 80px 48px;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
+    #coda { background: var(--card); border-top: 1px solid rgba(145,65,14,0.12); }
+    .coda-inner { text-align: center; padding: 80px 48px; max-width: 700px; margin: 0 auto; }
     .coda-icon  { font-size: 32px; margin-bottom: 32px; opacity: 0.6; }
-
-    .coda-title {
-      font-family: var(--serif);
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight: 400;
-      color: var(--white);
-      margin-bottom: 24px;
-      line-height: 1.2;
-    }
-
-    .coda-body {
-      font-family: var(--serif);
-      font-size: 15px;
-      line-height: 1.8;
-      color: rgba(232,232,232,0.7);
-      margin-bottom: 40px;
-    }
-
-    .coda-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 32px;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      text-decoration: none;
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      transition: all 0.25s ease;
-    }
-
-    .coda-link:hover { background: var(--gold); color: var(--black); }
+    .coda-title { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 400; color: var(--text); margin-bottom: 24px; line-height: 1.2; }
+    .coda-body  { font-family: var(--serif); font-size: 15px; line-height: 1.8; color: rgba(25,25,25,0.68); margin-bottom: 40px; }
+    .coda-link { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; transition: all 0.25s ease; }
+    .coda-link:hover { background: var(--gold); color: var(--white); }
     .coda-link svg   { width: 14px; height: 14px; }
 
     /* ── Footer ── */
-    footer {
-      background: var(--black);
-      border-top: 1px solid rgba(255,255,255,0.05);
-      padding: 40px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 24px;
-    }
-
+    footer { background: #060606; border-top: 1px solid rgba(255,255,255,0.06); padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
     .footer-left { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); line-height: 1.8; }
-    .footer-left strong { display: block; color: var(--gold); margin-bottom: 4px; letter-spacing: 0.3em; }
+    .footer-left strong { display: block; color: rgba(232,219,200,0.55); margin-bottom: 4px; letter-spacing: 0.3em; }
     .footer-right { font-size: 10px; color: var(--muted); text-align: right; line-height: 1.8; }
 
     /* ── Reveal ── */
@@ -443,7 +367,7 @@
       max-width: 88vw;
       max-height: 74vh;
       object-fit: contain;
-      border: 1px solid rgba(201,168,76,0.25);
+      border: 1px solid rgba(145,65,14,0.25);
       display: block;
     }
     #it-lightbox-footer {
@@ -494,7 +418,7 @@
 
 <nav>
   <div class="nav-brand">
-    <span class="nav-logo">Ondas · 1925–1939</span>
+    <span class="nav-logo">Ondas · 1925–1935</span>
     <span class="nav-sep">—</span>
     <span class="nav-title">Itinerario 2</span>
   </div>
